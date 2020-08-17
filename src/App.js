@@ -11,22 +11,20 @@ class App extends React.Component {
 		this.setState({ errors: [] })
 		const newErrors = []
 
-		const actorOneId = this.getActorId(actorOneName)
+		const actorOneId = await this.getActorId(actorOneName)
 
 		if (!actorOneId) {
-			console.log('no actor found')
 			newErrors.push(`Couldn't find an actor named ${actorOneName}`)
 		}
 
-		const actorTwoId = this.getActorId(actorTwoName)
+		const actorTwoId = await this.getActorId(actorTwoName)
 
 		if (!actorTwoId) {
-			console.log('actor two bork')
 			newErrors.push(`Couldn't find an actor named ${actorTwoName}`)
 		}
 
 		if (newErrors !== []) {
-			this.setState({ error: newErrors })
+			this.setState({ errors: newErrors })
 			return
 		}
 
