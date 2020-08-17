@@ -49,7 +49,6 @@ class App extends React.Component {
 		})
 
 		if (actorIdResponse.data.results.length < 1) {
-			console.log('Cannot find actor named', actorName)
 			return false
 		}
 
