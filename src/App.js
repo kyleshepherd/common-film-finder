@@ -6,7 +6,14 @@ import tmdb from './apis/tmdb'
 import Spinner from './components/Spinner'
 
 class App extends React.Component {
-	state = { sharedMovies: [], errors: [], queried: false, loading: false }
+	state = {
+		actorOne: {},
+		actorTwo: {},
+		sharedMovies: [],
+		errors: [],
+		queried: false,
+		loading: false,
+	}
 
 	onActorsSubmit = async (actorOneName, actorTwoName) => {
 		this.setState({
@@ -14,22 +21,24 @@ class App extends React.Component {
 			sharedMovies: [],
 			queried: false,
 			loading: true,
+			actorOne: {},
+			actorTwo: {},
 		})
 		const newErrors = []
 
-		const actorOneId = await this.getActorId(actorOneName)
+		const actorOne = await this.getActor(actorOneName)
 
-		if (!actorOneId) {
+		if (!actorOne.id) {
 			newErrors.push(`Couldn't find an actor named ${actorOneName}`)
 		}
 
-		const actorTwoId = await this.getActorId(actorTwoName)
+		const actorTwo = await this.getActor(actorTwoName)
 
-		if (!actorTwoId) {
+		if (!actorTwo.id) {
 			newErrors.push(`Couldn't find an actor named ${actorTwoName}`)
 		}
 
-		if (actorOneId === actorTwoId) {
+		if (actorOne.id === actorTwo.id) {
 			newErrors.push('Both actors cannot be the same')
 		}
 
@@ -38,27 +47,11 @@ class App extends React.Component {
 			return
 		}
 
-		const actorOneMoviesResponse = await tmdb.get(
-			`/person/${actorOneId}/movie_credits`,
-			{
-				params: {
-					api_key: '982b666644941aee3e5b5bd88d7569d4',
-				},
-			}
-		)
+		this.setState({ actorOne, actorTwo })
 
-		const actorOneMovies = actorOneMoviesResponse.data.cast
+		const actorOneMovies = await this.getActorMovieCredits(actorOne.id)
 
-		const actorTwoMoviesResponse = await tmdb.get(
-			`/person/${actorTwoId}/movie_credits`,
-			{
-				params: {
-					api_key: '982b666644941aee3e5b5bd88d7569d4',
-				},
-			}
-		)
-
-		const actorTwoMovies = actorTwoMoviesResponse.data.cast
+		const actorTwoMovies = await this.getActorMovieCredits(actorTwo.id)
 
 		const shared = []
 
@@ -73,7 +66,7 @@ class App extends React.Component {
 		this.setState({ sharedMovies: shared, queried: true, loading: false })
 	}
 
-	getActorId = async actorName => {
+	getActor = async actorName => {
 		const actorIdResponse = await tmdb.get('/search/person', {
 			params: {
 				query: actorName,
@@ -85,7 +78,20 @@ class App extends React.Component {
 			return false
 		}
 
-		return actorIdResponse.data.results[0].id
+		return actorIdResponse.data.results[0]
+	}
+
+	getActorMovieCredits = async actorId => {
+		const actorMoviesResponse = await tmdb.get(
+			`/person/${actorId}/movie_credits`,
+			{
+				params: {
+					api_key: '982b666644941aee3e5b5bd88d7569d4',
+				},
+			}
+		)
+
+		return actorMoviesResponse.data.cast
 	}
 
 	render() {
@@ -97,16 +103,21 @@ class App extends React.Component {
 					loading={this.state.loading}
 				/>
 				<ErrorNotices errors={this.state.errors} />
-				{this.state.loading ? <Spinner /> : null}
-				{this.state.queried ? (
+				{this.state.loading ? (
+					<Spinner />
+				) : (
 					<>
-						{this.state.sharedMovies.length > 0 ? (
-							<div>Has shared movies</div>
-						) : (
-							<div>Has no shared movies</div>
-						)}
+						{this.state.queried ? (
+							<>
+								{this.state.sharedMovies.length > 0 ? (
+									<div>Has shared movies</div>
+								) : (
+									<div>Has no shared movies</div>
+								)}
+							</>
+						) : null}
 					</>
-				) : null}
+				)}
 			</div>
 		)
 	}
