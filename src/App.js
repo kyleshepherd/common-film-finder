@@ -40,12 +40,12 @@ class App extends React.Component {
 			newErrors.push(`Couldn't find an actor named ${actorTwoName}`)
 		}
 
-		if (actorOne.id === actorTwo.id) {
+		if (actorOne.id && actorTwo.id && actorOne.id === actorTwo.id) {
 			newErrors.push('Both actors cannot be the same')
 		}
 
 		if (newErrors.length > 0) {
-			this.setState({ errors: newErrors })
+			this.setState({ errors: newErrors, loading: false })
 			return
 		}
 
