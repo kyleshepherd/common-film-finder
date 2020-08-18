@@ -4,6 +4,7 @@ import Header from './components/Header'
 import SearchBars from './components/SearchBars'
 import tmdb from './apis/tmdb'
 import Spinner from './components/Spinner'
+import ActorsHolder from './components/ActorsHolder'
 
 class App extends React.Component {
 	state = {
@@ -96,7 +97,7 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<div className="bg-blue-800 h-screen p-2">
+			<div className="bg-blue-800 min-h-screen p-2">
 				<Header />
 				<SearchBars
 					onActorsSubmit={this.onActorsSubmit}
@@ -109,11 +110,12 @@ class App extends React.Component {
 					<>
 						{this.state.queried ? (
 							<>
-								{this.state.sharedMovies.length > 0 ? (
-									<div>Has shared movies</div>
-								) : (
-									<div>Has no shared movies</div>
-								)}
+								{this.state.actorOne && this.state.actorTwo ? (
+									<ActorsHolder
+										actorOne={this.state.actorOne}
+										actorTwo={this.state.actorTwo}
+									/>
+								) : null}
 							</>
 						) : null}
 					</>
