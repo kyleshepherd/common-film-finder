@@ -3,12 +3,18 @@ import ErrorNotices from './components/ErrorNotices'
 import Header from './components/Header'
 import SearchBars from './components/SearchBars'
 import tmdb from './apis/tmdb'
+import Spinner from './components/Spinner'
 
 class App extends React.Component {
-	state = { sharedMovies: [], errors: [] }
+	state = { sharedMovies: [], errors: [], queried: false, loading: false }
 
 	onActorsSubmit = async (actorOneName, actorTwoName) => {
-		this.setState({ errors: [] })
+		this.setState({
+			errors: [],
+			sharedMovies: [],
+			queried: false,
+			loading: true,
+		})
 		const newErrors = []
 
 		const actorOneId = await this.getActorId(actorOneName)
@@ -64,7 +70,7 @@ class App extends React.Component {
 			})
 		})
 
-		console.log(shared)
+		this.setState({ sharedMovies: shared, queried: true, loading: false })
 	}
 
 	getActorId = async actorName => {
@@ -86,8 +92,21 @@ class App extends React.Component {
 		return (
 			<div className="bg-blue-800 h-screen p-2">
 				<Header />
-				<SearchBars onActorsSubmit={this.onActorsSubmit} />
+				<SearchBars
+					onActorsSubmit={this.onActorsSubmit}
+					loading={this.state.loading}
+				/>
 				<ErrorNotices errors={this.state.errors} />
+				{this.state.loading ? <Spinner /> : null}
+				{this.state.queried ? (
+					<>
+						{this.state.sharedMovies.length > 0 ? (
+							<div>Has shared movies</div>
+						) : (
+							<div>Has no shared movies</div>
+						)}
+					</>
+				) : null}
 			</div>
 		)
 	}

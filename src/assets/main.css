@@ -605,6 +605,27 @@ video {
   }
 }
 
+.loader-wrapper {
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.loader {
+  border-top-color: #3498db;
+  animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .space-y-0 > :not(template) ~ :not(template) {
   --space-y-reverse: 0;
   margin-top: calc(0px * calc(1 - var(--space-y-reverse)));

@@ -48,7 +48,17 @@ class SearchBars extends React.Component {
 							onChange={e => this.setState({ actorTwo: e.target.value })}
 						/>
 					</div>
-					<button type="submit" className="hidden" />
+					<button
+						type="submit"
+						className={`rounded px-4 py-1 mt-2 hover:bg-gray-400 ${
+							this.props.loading
+								? 'disabled cursor-not-allowed bg-gray-700'
+								: 'bg-gray-200'
+						}`}
+						disabled={this.props.loading}
+					>
+						Search
+					</button>
 				</form>
 			</div>
 		)
