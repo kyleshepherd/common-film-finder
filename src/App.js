@@ -5,6 +5,7 @@ import SearchBars from './components/SearchBars'
 import tmdb from './apis/tmdb'
 import Spinner from './components/Spinner'
 import ActorsHolder from './components/ActorsHolder'
+import MoviesList from './components/MoviesList'
 
 class App extends React.Component {
 	state = {
@@ -64,7 +65,9 @@ class App extends React.Component {
 			})
 		})
 
-		this.setState({ sharedMovies: shared, queried: true, loading: false })
+		const movies = await this.getMovies(shared)
+
+		this.setState({ sharedMovies: movies, queried: true, loading: false })
 	}
 
 	getActor = async actorName => {
@@ -95,6 +98,28 @@ class App extends React.Component {
 		return actorMoviesResponse.data.cast
 	}
 
+	getMovies = async movieIds => {
+		const movies = []
+
+		for (const movieId of movieIds) {
+			const movieResponse = await tmdb.get(`/movie/${movieId}`, {
+				params: {
+					api_key: '982b666644941aee3e5b5bd88d7569d4',
+				},
+			})
+
+			// Filter out unreleased/rumoured films, and BTS etc.
+			if (
+				movieResponse.data.status === 'Released' &&
+				movieResponse.data.revenue > 0
+			) {
+				movies.push(movieResponse.data)
+			}
+		}
+
+		return movies
+	}
+
 	render() {
 		return (
 			<div className="bg-blue-800 min-h-screen p-2">
@@ -111,10 +136,17 @@ class App extends React.Component {
 						{this.state.queried ? (
 							<>
 								{this.state.actorOne && this.state.actorTwo ? (
-									<ActorsHolder
-										actorOne={this.state.actorOne}
-										actorTwo={this.state.actorTwo}
-									/>
+									<>
+										<ActorsHolder
+											actorOne={this.state.actorOne}
+											actorTwo={this.state.actorTwo}
+										/>
+										<MoviesList
+											actorOne={this.state.actorOne}
+											actorTwo={this.state.actorTwo}
+											sharedMovies={this.state.sharedMovies}
+										/>
+									</>
 								) : null}
 							</>
 						) : null}
