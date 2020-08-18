@@ -74,7 +74,7 @@ class App extends React.Component {
 		const actorIdResponse = await tmdb.get('/search/person', {
 			params: {
 				query: actorName,
-				api_key: '982b666644941aee3e5b5bd88d7569d4',
+				api_key: process.env.REACT_APP_TMDB_KEY,
 			},
 		})
 
@@ -90,7 +90,7 @@ class App extends React.Component {
 			`/person/${actorId}/movie_credits`,
 			{
 				params: {
-					api_key: '982b666644941aee3e5b5bd88d7569d4',
+					api_key: process.env.REACT_APP_TMDB_KEY,
 				},
 			}
 		)
@@ -104,7 +104,7 @@ class App extends React.Component {
 		for (const movieId of movieIds) {
 			const movieResponse = await tmdb.get(`/movie/${movieId}`, {
 				params: {
-					api_key: '982b666644941aee3e5b5bd88d7569d4',
+					api_key: process.env.REACT_APP_TMDB_KEY,
 				},
 			})
 
